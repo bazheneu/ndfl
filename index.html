@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вычеты и 3-НДФЛ: практикум</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#222222;--blue:#7C46B9;--orange:#FF9E2F;--tint:#F2EBF9;--warm:#FFF3E0;--line:#D9D9E6;--ok:#1E8A4C;--bad:#C93A2B;--badbg:#FDECEA;--okbg:#E8F5EC}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;font:17px/1.55 Roboto,Arial,sans-serif;color:var(--ink);background:#fff}
+.wrap{max-width:780px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:Montserrat,Arial,sans-serif;line-height:1.2;margin:0}
+header{padding:48px 0 28px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:800}
+.lead{margin:14px 0 0;max-width:60ch;color:#444}
+nav{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:4px;overflow-x:auto;padding-top:8px;padding-bottom:8px}
+nav a{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:20px;color:var(--ink);text-decoration:none;font-size:14px;white-space:nowrap}
+nav a:hover{background:var(--tint)}
+nav a i{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);flex:none}
+nav a.done i{background:var(--ok);border-color:var(--ok)}
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+h2{font-size:24px;font-weight:800;display:flex;gap:14px;align-items:center}
+h2 .n{flex:none;width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:16px}
+.task{margin:12px 0 22px;color:#444;max-width:62ch}
+.q{font-weight:500;margin:20px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{font:inherit;font-size:15px;padding:9px 14px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-align:left}
+.chips button:hover{border-color:var(--blue)}
+.chips button[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.out{margin-top:22px;padding:16px 18px;border-left:5px solid var(--blue);background:var(--tint);border-radius:0 10px 10px 0}
+.out p{margin:0 0 8px}.out p:last-child{margin:0}
+.out.warn{border-color:var(--orange);background:var(--warm)}
+.out.bad{border-color:var(--bad);background:var(--badbg)}
+.out.ok{border-color:var(--ok);background:var(--okbg)}
+.out strong{font-weight:700}
+.out:empty{display:none}
+.mini{font-size:14px;color:#555}
+.doc-group{margin-top:22px}
+.doc-group h3{font-size:16px;margin-bottom:6px}
+.doc-group label{display:flex;gap:10px;align-items:flex-start;padding:7px 0;cursor:pointer}
+.doc-group input{margin-top:5px;width:18px;height:18px;accent-color:var(--blue);flex:none}
+.doc-group input:checked+span{color:#777;text-decoration:line-through}
+.bar{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin:18px 0 4px}
+.bar i{display:block;height:100%;width:0;background:var(--orange);transition:width .3s}
+.bar.full i{background:var(--ok)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.field label{display:block;font-size:14px;font-weight:500;margin-bottom:4px}
+.field input{width:100%;font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+.pair{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;margin:12px 0}
+.pair .res{font-size:14px;min-width:150px;padding-bottom:10px}
+.res.okc{color:var(--ok);font-weight:500}.res.badc{color:var(--bad);font-weight:500}
+.print{margin-top:28px;font:inherit;font-weight:500;padding:11px 18px;border-radius:10px;border:0;background:var(--ink);color:#fff;cursor:pointer}
+footer{padding:28px 0 60px;color:#666;font-size:14px}
+@media(max-width:560px){.pair{grid-template-columns:1fr 1fr}.pair .res{grid-column:1/-1;padding:0}}
+@media print{nav,.print{display:none}section{padding:20px 0;break-inside:avoid}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.bar i{transition:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>Вычеты и 3-НДФЛ: практикум</h1>
+<p class="lead">Здесь не нужно отмечать «галочки» ради галочек. Расскажи о своей ситуации — страница подскажет маршрут, соберёт твой список документов, посчитает возврат и сверит цифры. Всё считается в браузере, ничего никуда не отправляется.</p>
+</div></header>
+<nav aria-label="Маршрут"><div class="wrap" id="route">
+<a href="#s1" data-s="s1"><i></i>Ситуация</a><a href="#s2" data-s="s2"><i></i>Год</a><a href="#s3" data-s="s3"><i></i>Документы</a><a href="#s4" data-s="s4"><i></i>Расчёт</a><a href="#s5" data-s="s5"><i></i>Сверка</a><a href="#s6" data-s="s6"><i></i>Подача и сроки</a>
+</div></nav>
+
+<main class="wrap">
+
+<section id="s1">
+<h2><span class="n">1</span>Нужна ли тебе декларация и какой у тебя вычет</h2>
+<p class="task">Задание: ответь на четыре вопроса о своей ситуации.</p>
+<p class="q">Что хочешь вернуть? Можно выбрать несколько.</p>
+<div class="chips" id="g-types"></div>
+<p class="q">Был ли в этом году доход, с которого удерживали НДФЛ?</p>
+<div class="chips" id="g-income"></div>
+<p class="q">Есть ли доходы, которые нужно задекларировать самому (продажа имущества, аренда, отдельные доходы из-за рубежа)?</p>
+<div class="chips" id="g-other"></div>
+<p class="q">Получал(а) ли ты уже вычет по этим расходам у работодателя или в упрощённом порядке в личном кабинете ФНС?</p>
+<div class="chips" id="g-got"></div>
+<div class="out" id="o1" aria-live="polite"></div>
+</section>
+
+<section id="s2">
+<h2><span class="n">2</span>За какой год можно вернуть налог</h2>
+<p class="task">Задание: выбери год, в котором ты фактически оплатил(а) расходы.</p>
+<div class="chips" id="g-year"></div>
+<div class="out" id="o2" aria-live="polite"></div>
+</section>
+
+<section id="s3">
+<h2><span class="n">3</span>Твой личный пакет документов</h2>
+<p class="task">Список собирается из твоих ответов в шаге 1. Отмечай документ, когда он реально лежит у тебя в папке: скан, фото или оригинал.</p>
+<div class="bar" id="bar3"><i></i></div><div class="mini" id="cnt3"></div>
+<div id="docs"></div>
+</section>
+
+<section id="s4">
+<h2><span class="n">4</span>Сколько реально вернут</h2>
+<p class="task">Задание: введи свои цифры. Вернуть можно только то, что фактически удержали с твоих доходов за год.</p>
+<div class="grid">
+<div class="field"><label for="c-tax">НДФЛ, удержанный за год, ₽</label><input id="c-tax" inputmode="decimal" placeholder="например, 65 000"></div>
+<div class="field"><label for="c-exp">Подтверждённые расходы, ₽</label><input id="c-exp" inputmode="decimal" placeholder="например, 80 000"></div>
+<div class="field"><label for="c-lim">Лимит вычета по твоему виду, ₽</label><input id="c-lim" inputmode="decimal" placeholder="необязательно"></div>
+<div class="field"><label for="c-rate">Ставка НДФЛ, %</label><input id="c-rate" inputmode="decimal" value="13"></div>
+</div>
+<p class="mini">Лимит и ставку возьми из Налогового кодекса или справки с твоей ставкой: размеры лимитов зависят от вида вычета и меняются, поэтому здесь их нет.</p>
+<div class="out" id="o4" aria-live="polite"></div>
+</section>
+
+<section id="s5">
+<h2><span class="n">5</span>Сверка перед отправкой</h2>
+<p class="task">Задание: сначала сравни цифры в справке и в декларации, затем честно ответь на пять вопросов.</p>
+<div class="pair"><div class="field"><label for="r1a">Доход по справке, ₽</label><input id="r1a" inputmode="decimal"></div><div class="field"><label for="r1b">Доход в декларации, ₽</label><input id="r1b" inputmode="decimal"></div><div class="res" id="res1"></div></div>
+<div class="pair"><div class="field"><label for="r2a">Удержанный НДФЛ по справке, ₽</label><input id="r2a" inputmode="decimal"></div><div class="field"><label for="r2b">Удержанный НДФЛ в декларации, ₽</label><input id="r2b" inputmode="decimal"></div><div class="res" id="res2"></div></div>
+<div id="rq"></div>
+<div class="out" id="o5" aria-live="polite"></div>
+</section>
+
+<section id="s6">
+<h2><span class="n">6</span>Подача и сроки</h2>
+<p class="task">Задание: определи свой срок и посчитай, когда ждать деньги.</p>
+<p class="q">Зачем ты подаёшь декларацию?</p>
+<div class="chips" id="g-only"></div>
+<p class="q">Когда планируешь подать?</p>
+<div class="field" style="max-width:220px"><input type="date" id="d-sub" aria-label="Дата подачи"></div>
+<div class="out" id="o6" aria-live="polite"></div>
+<p class="q">Порядок подачи через личный кабинет налогоплательщика</p>
+<div id="submit" class="doc-group"></div>
+</section>
+
+<section id="s7" style="border:0;padding-top:28px"><button class="print" onclick="window.print()">Распечатать мой маршрут или сохранить в PDF</button></section>
+</main>
+<footer><div class="wrap">Материал учебный, основан на чек-листе сотрудника. Лимиты, ставки и порядок подачи проверяй на сайте ФНС и в Налоговом кодексе.</div></footer>
+
+<script>
+const $=s=>document.querySelector(s);
+const Y=new Date().getFullYear();
+const state={types:new Set(),income:null,other:null,got:null,year:null,only:null,checked:new Set(),rq:{}};
+const fmt=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(n))+' ₽';
+const num=v=>parseFloat(String(v).replace(/\s/g,'').replace(',','.'))||0;
+const done={};
+function setDone(k,v){done[k]=v;const a=document.querySelector('nav a[data-s="'+k+'"]');if(a)a.classList.toggle('done',!!v)}
+
+function group(id,opts,multi,key,cb){
+  const el=$('#'+id);
+  const sync=()=>el.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',multi?state[key].has(opts[i][0]):state[key]===opts[i][0]));
+  opts.forEach(([v,l])=>{
+    const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed','false');
+    b.onclick=()=>{if(multi){state[key].has(v)?state[key].delete(v):state[key].add(v)}else state[key]=v;sync();cb()};
+    el.appendChild(b);
+  });
+}
+
+const TYPES=[
+ ['med','Лечение и лекарства','Социальный'],['edu','Обучение','Социальный'],['sport','Спорт','Социальный'],
+ ['soc','Страхование, пенсионные взносы, благотворительность','Социальный'],
+ ['home','Покупка или строительство жилья','Имущественный'],['mort','Проценты по ипотеке','Имущественный'],
+ ['iis','ИИС и инвестиции','Инвестиционный'],['kids','Вычет на детей','Стандартный'],['sale','Продажа имущества','Доход от продажи']
+];
+group('g-types',TYPES.map(t=>[t[0],t[1]]),true,'types',onS1);
+group('g-income',[['yes','Да'],['no','Нет'],['unknown','Не знаю']],false,'income',onS1);
+group('g-other',[['yes','Да'],['no','Нет']],false,'other',onS1);
+group('g-got',[['yes','Да, уже получал(а)'],['no','Нет']],false,'got',onS1);
+group('g-year',[[Y-1,String(Y-1)],[Y-2,String(Y-2)],[Y-3,String(Y-3)],[Y,Y+' (идёт сейчас)'],[0,'Раньше '+(Y-3)]],false,'year',onS2);
+group('g-only',[['only','Только ради вычета'],['both','Ещё нужно задекларировать доход']],false,'only',onS6);
+
+function box(id,cls,html){const e=$('#'+id);e.className='out'+(cls?' '+cls:'');e.innerHTML=html}
+
+function onS1(){
+  const miss=[];
+  if(!state.types.size)miss.push('выбери, что хочешь вернуть');
+  if(!state.income)miss.push('ответь про доход с НДФЛ');
+  if(!state.other)miss.push('ответь про доходы для самостоятельного декларирования');
+  if(!state.got)miss.push('ответь про уже полученный вычет');
+  if(miss.length){box('o1','','<p class="mini">Осталось: '+miss.join('; ')+'.</p>');setDone('s1',false);renderDocs();return}
+  const kinds=[...new Set(TYPES.filter(t=>state.types.has(t[0])).map(t=>t[2]))];
+  const onlyKids=state.types.size===1&&state.types.has('kids');
+  let cls='',h='<p><strong>Твой вид вычета: '+kinds.join(', ').toLowerCase()+'.</strong></p>';
+  if(state.income==='no'){cls='bad';h+='<p><strong>Стоп: вернуть пока нечего.</strong> Вычет возможен только за год, в котором был доход, с которого удержали НДФЛ. Если такой доход был в другом году — выбери его в шаге 2.</p>'}
+  else if(state.other==='yes'||state.types.has('sale')){cls='warn';h+='<p><strong>3-НДФЛ, скорее всего, обязательна.</strong> Вычет можно заявить в этой же декларации, даже если доход нужно декларировать самостоятельно.</p>'}
+  else if(onlyKids){h+='<p><strong>Начни с работодателя.</strong> Вычет на детей чаще оформляют у него — подай заявление в бухгалтерию.</p>'}
+  else{h+='<p><strong>Сначала проверь упрощённый путь.</strong> Часть вычетов оформляют через работодателя или в упрощённом порядке в личном кабинете ФНС — тогда декларация не понадобится. Если твой вычет так оформить нельзя, подавай 3-НДФЛ.</p>'}
+  if(state.income==='unknown')h+='<p>Проверь справку о доходах и суммах НДФЛ или данные в личном кабинете ФНС: без удержанного налога возвращать нечего.</p>';
+  if(state.got==='yes'){if(cls!=='bad')cls='warn';h+='<p><strong>Осторожно с дублем.</strong> Если вычет по этим расходам уже предоставлен, второй раз заявлять их в декларации нельзя. Выясни, какие суммы уже учтены.</p>'}
+  if(kinds.length>1)h+='<p>Расходы разных видов можно заявить в одной декларации за один год, но документы понадобятся по каждому виду отдельно.</p>';
+  if(state.types.has('sale'))h+='<p>При продаже имущества определи доход от продажи и расходы, которыми его можно уменьшить.</p>';
+  box('o1',cls,h);setDone('s1',true);renderDocs();onS6();
+}
+
+function onS2(){
+  const y=state.year;setDone('s2',y!==null);
+  if(y===null)return;
+  if(y===0){box('o2','bad','<p><strong>Этот год вне окна.</strong> Возврат запрашивают не более чем за три предыдущих года. Сейчас это '+(Y-3)+'–'+(Y-1)+'.</p>');return}
+  if(y===Y){box('o2','warn','<p><strong>Год ещё не закончился.</strong> Декларацию за '+Y+' год обычно подают после его окончания.</p><p>Пока собери документы в шаге 3.</p>');renderDocs();return}
+  box('o2','ok','<p><strong>Можно подавать.</strong> Выбирай в декларации '+y+' год.</p><p>Проверь два условия: расходы действительно оплачены в '+y+' году, а за этот год с тебя удерживали НДФЛ. Возврат не будет больше налога, который удержали именно за '+y+' год.</p><p>Если удержано меньше, остаток вычета переносится на следующие годы — когда это допускает его вид.</p>');
+  renderDocs();onS6();
+}
+
+const COMMON=['Паспортные данные и ИНН','Справка о доходах и суммах НДФЛ от работодателя — или проверенные сведения в личном кабинете ФНС','Реквизиты банковского счёта на моё имя для возврата налога','Договоры, чеки, квитанции, платёжные поручения или иные документы об оплате'];
+function renderDocs(){
+  const t=state.types,g=[];
+  g.push(['Для любой декларации',COMMON]);
+  if(t.has('med')||t.has('edu')||t.has('sport'))g.push(['Лечение, обучение, спорт',['Договор с организацией или ИП','Справка об оплате услуг по форме организации — если она предусмотрена для этого вида расходов','Документы о родстве, если оплатил(а) лечение или обучение близкого родственника','Проверил(а), что организация вправе оказывать эти услуги, когда это нужно для вычета']]);
+  if(t.has('home'))g.push(['Покупка жилья',['Договор купли-продажи, ДДУ или другой документ-основание','Акт приёма-передачи — если применимо','Выписка ЕГРН или другой документ о праве собственности — если он нужен в твоей ситуации','Документы, подтверждающие оплату','Жильё куплено в браке: документы о браке и заявление о распределении вычета, если нужно']]);
+  if(t.has('mort'))g.push(['Ипотечные проценты',['Кредитный договор','Справка банка о процентах, уплаченных именно за '+(state.year&&state.year!==0?state.year:'нужный')+' год','Платёжные документы — если их запросит инспекция']]);
+  if(t.has('sale'))g.push(['Продажа имущества',['Определил(а) доход от продажи','Собрал(а) расходы, которыми его можно уменьшить']]);
+  let note='';
+  if(t.has('soc')||t.has('iis')||t.has('kids'))note='<p class="mini">Для страхования, пенсионных взносов, благотворительности, ИИС и вычета на детей отдельного перечня в чек-листе нет — опирайся на общий список. Вычет на детей чаще оформляют у работодателя.</p>';
+  if(!t.size){$('#docs').innerHTML='<p class="mini">Выбери в шаге 1, что хочешь вернуть, — список появится здесь.</p>';progress();return}
+  $('#docs').innerHTML=g.map(([h,l])=>'<div class="doc-group"><h3>'+h+'</h3>'+l.map(x=>'<label><input type="checkbox" data-k="'+x.replace(/"/g,'&quot;')+'"'+(state.checked.has(x)?' checked':'')+'><span>'+x+'</span></label>').join('')+'</div>').join('')+note;
+  progress();
+}
+$('#docs').addEventListener('change',e=>{if(e.target.dataset.k===undefined)return;e.target.checked?state.checked.add(e.target.dataset.k):state.checked.delete(e.target.dataset.k);progress()});
+function progress(){
+  const all=[...document.querySelectorAll('#docs input')];
+  const c=all.filter(i=>i.checked).length;
+  $('#bar3 i').style.width=(all.length?c/all.length*100:0)+'%';
+  $('#bar3').classList.toggle('full',all.length>0&&c===all.length);
+  $('#cnt3').textContent=all.length?('Собрано '+c+' из '+all.length):'';
+  setDone('s3',all.length>0&&c===all.length);
+}
+
+function calc(){
+  const tax=num($('#c-tax').value),exp=num($('#c-exp').value),lim=num($('#c-lim').value),rate=num($('#c-rate').value)||13;
+  if(!tax||!exp){box('o4','','');setDone('s4',false);return}
+  let h='',cls='ok';
+  const base=lim&&exp>lim?lim:exp;
+  if(lim&&exp>lim){cls='warn';h+='<p>Расходы ('+fmt(exp)+') выше лимита. К вычету берётся только <strong>'+fmt(lim)+'</strong> — заявлять сумму выше лимита нельзя.</p>'}
+  const poss=base*rate/100,ref=Math.min(tax,poss),carry=poss-ref;
+  h+='<p>Налог по вычету: '+fmt(base)+' × '+rate+'% = <strong>'+fmt(poss)+'</strong>.</p>';
+  h+='<p><strong>К возврату: '+fmt(ref)+'.</strong></p>';
+  if(carry>0){cls='warn';h+='<p>Удержано всего '+fmt(tax)+', поэтому вернут не больше. Остаток '+fmt(carry)+' переносится на следующие годы — если это допускает вид вычета. Для социальных вычетов перенос обычно не предусмотрен: уточни это для своего вида.</p>'}
+  if(!lim)h+='<p class="mini">Лимит не указан — проверь, не превышает ли сумма расходов установленный лимит по твоему виду.</p>';
+  box('o4',cls,h);setDone('s4',true);
+}
+['c-tax','c-exp','c-lim','c-rate'].forEach(i=>$('#'+i).addEventListener('input',calc));
+
+function pair(a,b,r){
+  const x=$('#'+a).value,y=$('#'+b).value,e=$('#'+r);
+  if(!x||!y){e.textContent='';e.className='res';return null}
+  const d=Math.abs(num(x)-num(y));
+  if(d<0.5){e.textContent='Совпадает';e.className='res okc';return true}
+  e.textContent='Расхождение '+fmt(d)+': исправь декларацию или запроси уточнённую справку';e.className='res badc';return false;
+}
+const RQ=[
+ ['Год в декларации совпадает с годом, когда я оплатил(а) расходы','Выбери правильный год декларации: он должен совпадать с годом оплаты расходов.'],
+ ['В расходы включены только суммы, которые я оплатил(а) сам(а) и подтвердил(а) документами','Убери суммы, оплаченные другим человеком, и всё, что нельзя подтвердить как свои расходы.'],
+ ['Эти же расходы не заявлены у работодателя и в упрощённом порядке','Один и тот же вычет дважды не получают. Сверься с бухгалтерией и личным кабинетом.'],
+ ['Указаны все доходы, которые нужно отразить','Добавь недостающие доходы: иначе декларация будет неполной.'],
+ ['Реквизиты счёта на моё имя, цифры введены без ошибок','Перепроверь номер счёта и БИК, счёт должен быть открыт на твоё имя.']
+];
+$('#rq').innerHTML=RQ.map((q,i)=>'<p class="q">'+q[0]+'?</p><div class="chips" id="rq'+i+'"></div>').join('');
+RQ.forEach((q,i)=>{
+  const el=$('#rq'+i);
+  [['y','Да'],['n','Нет, ещё проверю']].forEach(([v,l])=>{
+    const b=document.createElement('button');b.type='button';b.textContent=l;b.setAttribute('aria-pressed','false');
+    b.onclick=()=>{state.rq[i]=v;el.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));recon()};
+    el.appendChild(b);
+  });
+});
+function recon(){
+  const p1=pair('r1a','r1b','res1'),p2=pair('r2a','r2b','res2');
+  const ans=Object.keys(state.rq).length,bad=RQ.map((q,i)=>state.rq[i]==='n'?q[1]:null).filter(Boolean);
+  let h='',cls='';
+  if(bad.length){cls='warn';h='<p><strong>Что исправить до отправки:</strong></p>'+bad.map(b=>'<p>— '+b+'</p>').join('')}
+  else if(ans===RQ.length&&p1!==false&&p2!==false){cls='ok';h='<p><strong>Всё сходится.</strong> Можно переходить к подаче.</p>'}
+  box('o5',cls,h);
+  setDone('s5',ans===RQ.length&&!bad.length&&p1!==false&&p2!==false);
+}
+['r1a','r1b','r2a','r2b'].forEach(i=>$('#'+i).addEventListener('input',recon));
+
+function addM(d,m){const r=new Date(d);const day=r.getDate();r.setMonth(r.getMonth()+m);if(r.getDate()!==day)r.setDate(0);return r}
+const df=d=>d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+$('#d-sub').valueAsDate=new Date();
+$('#d-sub').addEventListener('input',onS6);
+function onS6(){
+  const v=$('#d-sub').value;if(!state.only||!v){box('o6','','');setDone('s6',false);return}
+  const d=new Date(v+'T12:00:00');let h='',cls='';
+  const yr=state.year&&state.year!==0?state.year:Y-1;
+  if(state.only==='only'){h+='<p>Если 3-НДФЛ подаётся только ради вычета, срок 30 апреля обычно не применяется. Подавай, когда документы готовы, но в пределах трёх лет.</p>'}
+  else{
+    const dl=new Date(yr+1,3,30),pay=new Date(yr+1,6,15);
+    h+='<p>Если нужно задекларировать доход, декларацию за '+yr+' год обычно подают до <strong>'+df(dl)+'</strong>, а исчисленный налог платят до <strong>'+df(pay)+'</strong>.</p>';
+    if(d>dl){cls='warn';h+='<p><strong>Эта дата подачи позже срока.</strong> Не откладывай: просрочка опасна, если декларация обязательна из-за дохода от продажи, аренды и т. п.</p>'}
+  }
+  const chk=addM(d,3),ref=addM(d,4);
+  h+='<p>Камеральная проверка обычно занимает до 3 месяцев, при выбранной дате подачи — <strong>до '+df(chk)+'</strong>. После подтверждения вычета деньги, как правило, перечисляют в течение месяца: твой ориентир — <strong>не позднее '+df(ref)+'</strong>.</p>';
+  h+='<p class="mini">Это ориентир по обычным срокам, а не гарантия.</p>';
+  box('o6',cls,h);setDone('s6',true);
+}
+const SUB=['Заполнена декларация 3-НДФЛ','Приложены сканы или фото подтверждающих документов','Декларация подписана электронной подписью в личном кабинете','Отправлено заявление на возврат — если не сформировалось автоматически','Сохранена квитанция о приёме декларации','После подачи слежу за статусом камеральной проверки в личном кабинете'];
+$('#submit').innerHTML=SUB.map(x=>'<label><input type="checkbox"><span>'+x+'</span></label>').join('');
+
+onS1();
+</script>
+</body>
+</html>
